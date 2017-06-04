@@ -3,8 +3,7 @@
   "scripts": {
     "start": "roadhog server",
     "build": "roadhog build",
-    "lint": "eslint --ext .js src test",
-    "precommit": "npm run lint"
+    "lint": "eslint --ext .js src test"
   },
   "engines": {
     "install-node": "6.9.2"
@@ -16,7 +15,8 @@
     "dva": "^1.2.1",
     "prop-types": "^15.5.10",
     "react": "^15.4.0",
-    "react-dom": "^15.4.0"
+    "react-dom": "^15.4.0",
+    "keymaster": "latest"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",

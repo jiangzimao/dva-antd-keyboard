@@ -1,26 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'dva';
-import ChoiceBlockItem from './ChoiceBlockItem';
+import FormBlock from './FormBlock';
 
-const Main = (main) => {
-  const { displayBlock, choiceBlock, formBlock } = main;
+const Main = () => {
   return (
     <div>
-      { displayBlock.map(block => <ChoiceBlockItem {...block} />) }
-      { choiceBlock.map(block => <ChoiceBlockItem {...block} />) }
-      { formBlock }
+      { /* displayBlock.map((block) => <ChoiceBlockItem activeId={activeId} item={ block } />) */ }
+      { /* choiceBlock.map(block => <ChoiceBlockItem activeId={activeId} item={ block } />)*/ }
+      <FormBlock />
     </div>
   );
 };
 
-Main.propTypes = {
-  main: PropTypes.object,
-};
-
-// 监听属性，建立组件和数据的映射关系
-function mapStateToProps(state) {
-  return { ...state.main };
-}
-
-export default connect(mapStateToProps)(Main);
+export default Main;

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 
 export default {
 
@@ -10,11 +11,11 @@ export default {
   },
 
   subscriptions: {
-     setup({ dispatch, history }) {  // eslint-disable-line
-       dispatch({
-         type: 'init',
-       });
-     },
+    setup({ dispatch, history }) {  // eslint-disable-line
+      dispatch({
+        type: 'init',
+      });
+    },
   },
 
   effects: {
@@ -32,9 +33,6 @@ export default {
       ];
       return { ...state, ...action.payload, choiceBlock, formBlock };
     },
-    // save(state, action) {
-    //   return { ...state, ...action.payload };
-    // },
   },
 
 };
