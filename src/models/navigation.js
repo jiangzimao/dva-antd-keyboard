@@ -88,13 +88,13 @@ export default {
     // 选中事件
     selectItem(state) {
       const element = window.document.querySelector('.dcs-active, .dcs-table-active');
-      if (element.tagName === 'INPUT') {
+      if (element.tagName !== 'INPUT') {
         const input = element.querySelector('INPUT');
         input.click();
         event.stopPropagation();
         event.preventDefault();
-        return { ...state };
       }
+      return { ...state };
     },
 
     // 定义 Esc 事件
