@@ -15,7 +15,7 @@ const Command = ({ navigation }) => {
         <Form>
           <FormItem>
             <Input
-              ref={(input) => { deal(dcs.defaultBlockId, 'cmd', input); }}
+              ref={(input) => { deal(input, 'cmd'); }}
               className={getCls(activeId, 'cmd')}
               placeholder="input search text"
             />

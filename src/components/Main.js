@@ -1,12 +1,14 @@
 import React from 'react';
 import FormBlock from './FormBlock';
+import TableDemo from './TableDemo';
+import ShortcutBlock from './ShortcutBlock';
 
 const Main = () => {
   return (
     <div>
-      { /* displayBlock.map((block) => <ChoiceBlockItem activeId={activeId} item={ block } />) */ }
-      { /* choiceBlock.map(block => <ChoiceBlockItem activeId={activeId} item={ block } />)*/ }
+      <ShortcutBlock />
       <FormBlock />
+      <TableDemo />
     </div>
   );
 };

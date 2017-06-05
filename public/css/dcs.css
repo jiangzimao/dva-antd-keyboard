@@ -1,3 +1,7 @@
 .dcs-active {
-  border: dotted 2px #00ba7f !important;
+  border: solid 2px #00ba7f !important;
+}
+
+.dcs-table-active {
+  background-color: #00ba7f;
 }

@@ -1,16 +1,13 @@
 /* eslint-disable no-undef */
 import key from 'keymaster';
 import * as dcs from '../constant';
+import { resolveKey } from '../utils/active';
 
 key.filter = (event) => {
   const tagName = (event.target || event.srcElement).tagName;
   key.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
   return true;
 };
-
-window.document.addEventListener('focus', (e) => {
-  console.log(`focus:${e.target}`);
-});
 
 /**
  * 键盘导航 model
@@ -25,10 +22,47 @@ export default {
   },
 
   subscriptions: {
+    setup({ dispatch }) {
+      window.document.addEventListener('click', (e) => {
+        let element = e.target;
+        if (element) {
+          let classList = element.classList;
+          while (!classList.contains('dcs-selectable')) {
+            element = element.parentElement;
+            if (element.tagName === 'BODY') {
+              return;
+            }
+            classList = element.classList;
+          }
+          classList = new Set([...classList].filter(className => className.indexOf('dcs-item-') >= 0));
+          classList.forEach((value) => {
+            const currentKey = value.replace('dcs-item-', '');
+            const { blockId: activeBlockId, itemId: activeId } = resolveKey(currentKey);
+            dispatch({ type: 'special', payload: { activeBlockId, activeId } });
+          });
+        }
+      });
+    },
     keyboardWatcher({ dispatch }) {
+      key('enter', (event) => {
+        const element = window.document.querySelector('.dcs-active, .dcs-table-active');
+        alert(`您选择了[${element.innerText}]`);
+        event.stopPropagation();
+        event.preventDefault();
+      });
       key('esc', (event) => { dispatch({ type: 'esc' }); event.stopPropagation(); event.preventDefault(); });
       key('left, up, shift+tab', (event) => { dispatch({ type: 'last' }); event.stopPropagation(); event.preventDefault(); });
       key('right, down, tab', (event) => { dispatch({ type: 'next' }); event.stopPropagation(); event.preventDefault(); });
+      key('space', () => { dispatch({ type: 'selectItem' }); });
+      key('f2, f3, f4', (event) => {
+        const activeBlockId = event.key;
+        if (dcs.blocks.has(activeBlockId)) {
+          const blockItem = dcs.blocks.get(activeBlockId);
+          const activeIds = [...blockItem];
+          const activeId = activeIds[0];
+          dispatch({ type: 'special', payload: { activeBlockId, activeId } });
+        }
+      });
     },
   },
 
@@ -39,10 +73,32 @@ export default {
   },
 
   reducers: {
+    // 指定元素
+    special(state, action) {
+      const { activeBlockId, activeId } = action.payload;
+      if (activeBlockId && activeId) {
+        const newState = { ...state, activeBlockId, activeId };
+        return newState;
+      }
+      event.stopPropagation();
+      event.preventDefault();
+      return { ...state, activeId };
+    },
+
+    // 选中事件
+    selectItem(state) {
+      const element = window.document.querySelector('.dcs-active, .dcs-table-active');
+      if (element.tagName === 'INPUT') {
+        const input = element.querySelector('INPUT');
+        input.click();
+        event.stopPropagation();
+        event.preventDefault();
+        return { ...state };
+      }
+    },
 
     // 定义 Esc 事件
     esc(state) {
-      console.log(state);
       return { ...state, activeBlockId: dcs.defaultBlockId, activeId: dcs.defaultActiveId };
     },
 

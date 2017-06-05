@@ -9,11 +9,11 @@ const FormBlock = ({ navigation }) => {
   return (
     <Row type="flex" justify="space-around" align="middle">
       <Col span={22}>
-        <Input ref={input => deal(dcs.defaultBlockId, 'a', input)} className={getCls(activeId, 'a')} />
-        <Input ref={input => deal(dcs.defaultBlockId, 'az', input)} className={getCls(activeId, 'az')} />
-        <Input ref={input => deal(dcs.defaultBlockId, 'ac', input)} className={getCls(activeId, 'ac')} />
-        <Button ref={input => deal(dcs.defaultBlockId, 'ad', input)} className={getCls(activeId, 'ad')}>Default</Button>
-        <Radio ref={input => deal(dcs.defaultBlockId, 'ae', input)} className={getCls(activeId, 'ae')}>Radio</Radio>
+        <Input ref={input => deal(input, 'a')} className={getCls(activeId, 'a')} />
+        <Input ref={input => deal(input, 'az')} className={getCls(activeId, 'az')} />
+        <Input ref={input => deal(input, 'ac')} className={getCls(activeId, 'ac')} />
+        <Button ref={input => deal(input, 'ad')} className={getCls(activeId, 'ad')}>Default</Button>
+        <Radio ref={input => deal(input, 'ae')} className={getCls(activeId, 'ae')}>Radio</Radio>
       </Col>
     </Row>
   );
