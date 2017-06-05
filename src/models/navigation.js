@@ -55,7 +55,7 @@ export default {
       key('right, down, tab', (event) => { dispatch({ type: 'next' }); event.stopPropagation(); event.preventDefault(); });
       key('space', () => { dispatch({ type: 'selectItem' }); });
       key('f2, f3, f4', (event) => {
-        const activeBlockId = event.key;
+        const activeBlockId = event.code;
         if (dcs.blocks.has(activeBlockId)) {
           const blockItem = dcs.blocks.get(activeBlockId);
           const activeIds = [...blockItem];
