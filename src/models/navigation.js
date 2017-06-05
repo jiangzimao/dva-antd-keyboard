@@ -27,8 +27,8 @@ export default {
   subscriptions: {
     keyboardWatcher({ dispatch }) {
       key('esc', (event) => { dispatch({ type: 'esc' }); event.stopPropagation(); event.preventDefault(); });
-      key('up, shift+tab', (event) => { dispatch({ type: 'last' }); event.stopPropagation(); event.preventDefault(); });
-      key('down, tab', (event) => { dispatch({ type: 'next' }); event.stopPropagation(); event.preventDefault(); });
+      key('left, up, shift+tab', (event) => { dispatch({ type: 'last' }); event.stopPropagation(); event.preventDefault(); });
+      key('right, down, tab', (event) => { dispatch({ type: 'next' }); event.stopPropagation(); event.preventDefault(); });
     },
   },
 
