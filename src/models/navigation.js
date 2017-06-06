@@ -51,8 +51,8 @@ export default {
         event.preventDefault();
       });
       key('esc', (event) => { dispatch({ type: 'esc' }); event.stopPropagation(); event.preventDefault(); });
-      key('left, up, shift+tab', (event) => { dispatch({ type: 'last' }); event.stopPropagation(); event.preventDefault(); });
-      key('right, down, tab', (event) => { dispatch({ type: 'next' }); event.stopPropagation(); event.preventDefault(); });
+      key('left, up, shift+tab', () => { dispatch({ type: 'last', payload: { dispatch } }); });
+      key('right, down, tab', () => { dispatch({ type: 'next', payload: { dispatch } }); });
       key('space', () => { dispatch({ type: 'selectItem' }); });
       key('f2, f3, f4', (event) => {
         const activeBlockId = event.code;
@@ -102,39 +102,44 @@ export default {
       return { ...state, activeBlockId: dcs.defaultBlockId, activeId: dcs.defaultActiveId };
     },
 
-    // 定义 next 事件导航
-    next(state) {
+    // step
+    step(state, action) {
       const { activeBlockId, activeId } = state;
+      const { step } = action.payload;
       const currentBlockItems = Array.from(dcs.blocks.get(activeBlockId));
       let currentActiveIndex = currentBlockItems.findIndex((value) => {
         return value === activeId;
       });
-      if (currentActiveIndex === currentBlockItems.length - 1) {
-        currentActiveIndex = 0;
-      } else {
-        currentActiveIndex += 1;
+      if (step > 0) {
+        if (currentActiveIndex === currentBlockItems.length - 1) {
+          currentActiveIndex = 0;
+        } else {
+          currentActiveIndex += 1;
+        }
+      } else if (step < 0) {
+        if (currentActiveIndex === 0) {
+          currentActiveIndex = currentBlockItems.length - 1;
+        } else {
+          currentActiveIndex -= 1;
+        }
       }
       const nextActiveId = currentBlockItems[currentActiveIndex];
       dcs.currentActiveId = nextActiveId;
+      event.stopPropagation();
+      event.preventDefault();
       return { ...state, activeId: nextActiveId };
     },
 
+    // 定义 next 事件导航
+    next(state, action) {
+      const { dispatch } = action.payload;
+      dispatch({ type: 'state', payload: { step: 1 } });
+    },
+
     // 定义 last 事件导航
-    last(state) {
-      const blocks = dcs.blocks;
-      const { activeBlockId, activeId } = state;
-      const currentBlockItems = Array.from(blocks.get(activeBlockId));
-      let currentActiveIndex = currentBlockItems.findIndex((value) => {
-        return value === activeId;
-      });
-      if (currentActiveIndex === 0) {
-        currentActiveIndex = currentBlockItems.length - 1;
-      } else {
-        currentActiveIndex -= 1;
-      }
-      const nextActiveId = currentBlockItems[currentActiveIndex];
-      dcs.currentActiveId = nextActiveId;
-      return { ...state, activeId: nextActiveId };
+    last(state, action) {
+      const { dispatch } = action.payload;
+      dispatch({ type: 'state', payload: { step: -1 } });
     },
   },
 

@@ -60,7 +60,7 @@ const TableDemo = ({ navigation }) => {
   return (
     <Table
       rowRef={(record, index) => deal(record, `tr${index}`)}
-      rowClassName={(record, index) => { return getTableRowClass(activeId, record, index); }}
+      rowClassName={(record, index) => getTableRowClass(activeId, record, index)}
       rowSelection={rowSelection}
       columns={columns}
       dataSource={data}
