@@ -1,7 +1,7 @@
 /* eslint-disable block-spacing */
 import React from 'react';
 import { connect } from 'dva';
-import { getCls, deal } from '../utils/active';
+import { show, watch } from '../utils/NavigationMonitor';
 import { Table, Icon } from 'antd';
 
 const { Column, ColumnGroup } = Table;
@@ -50,7 +50,7 @@ const rowSelection = {
 };
 
 const getTableRowClass = (activeId, record, index) => {
-  const cls = getCls(activeId, `tr${index}`);
+  const cls = show(activeId, `tr${index}`);
   return cls;
 };
 
@@ -58,7 +58,7 @@ const TableDemo = ({ navigation }) => {
   const { activeId } = navigation;
   return (
     <Table
-      rowRef={(record, index) => deal(record, `tr${index}`)}
+      rowRef={(record, index) => watch(record, `tr${index}`)}
       rowClassName={(record, index) => getTableRowClass(activeId, record, index)}
       rowSelection={rowSelection}
       bordered

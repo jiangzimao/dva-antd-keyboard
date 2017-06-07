@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Row, Col, Form, Input } from 'antd';
-import { getCls, deal } from '../utils/active';
+import { show, watch } from '../utils/NavigationMonitor';
 
 const FormItem = Form.Item;
 
@@ -14,8 +14,8 @@ const Command = ({ navigation }) => {
         <Form>
           <FormItem>
             <Input
-              ref={(input) => { deal(input, 'cmd'); }}
-              className={getCls(activeId, 'cmd')}
+              ref={(input) => { watch(input, 'cmd'); }}
+              className={show(activeId, 'cmd')}
               placeholder="input search text"
             />
           </FormItem>

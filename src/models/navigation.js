@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import key from 'keymaster';
-import { resolveKey, navigationConstant as nc } from '../utils/active';
+import { resolveKey, context } from '../utils/NavigationMonitor';
 
 key.filter = (event) => {
   // const tagName = (event.target || event.srcElement).tagName;
@@ -133,8 +133,8 @@ export default {
   namespace: 'navigation',
 
   state: {
-    activeId: nc.defaultActiveId,       // 当前被激活的元素ID，默认为命令输入框获得焦点
-    activeBlockId: nc.defaultBlockId,  // 当前切换区域ID
+    activeId: context.defaultActiveId,       // 当前被激活的元素ID，默认为命令输入框获得焦点
+    activeBlockId: context.defaultBlockId,  // 当前切换区域ID
     fallbackQueue: new Set(),           // 返回区
     fallback: null,                      // 当前要返回的页面
   },
@@ -187,8 +187,8 @@ export default {
       key('space', () => { dispatch({ type: 'selectItem' }); });
       key('f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12', (event) => {
         const activeBlockId = event.code;
-        if (nc.blocks.has(activeBlockId)) {
-          const blockItem = nc.blocks.get(activeBlockId);
+        if (context.blocks.has(activeBlockId)) {
+          const blockItem = context.blocks.get(activeBlockId);
           dispatch({ type: 'special', payload: { activeBlockId, activeId: [...blockItem][0] } });
         }
         setFocus();
@@ -257,8 +257,8 @@ export default {
       }
       return {
         ...state,
-        activeBlockId: nc.defaultBlockId,
-        activeId: nc.defaultActiveId,
+        activeBlockId: context.defaultBlockId,
+        activeId: context.defaultActiveId,
       };
     },
 
@@ -266,7 +266,7 @@ export default {
     step(state, action) {
       const { activeBlockId, activeId } = state;
       const { step } = action.payload;
-      const currentBlockItems = Array.from(nc.blocks.get(activeBlockId));
+      const currentBlockItems = Array.from(context.blocks.get(activeBlockId));
       let currentActiveIndex = currentBlockItems.findIndex((value) => {
         return value === activeId;
       });
@@ -284,7 +284,7 @@ export default {
         }
       }
       const nextActiveId = currentBlockItems[currentActiveIndex];
-      nc.currentActiveId = nextActiveId;
+      context.currentActiveId = nextActiveId;
       event.stopPropagation();
       event.preventDefault();
       return { ...state, activeId: nextActiveId };

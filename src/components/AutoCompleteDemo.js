@@ -4,7 +4,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { AutoComplete } from 'antd';
-import { getCls, deal } from '../utils/active';
+import { show, watch } from '../utils/NavigationMonitor';
 
 function onSelect(value) {
   console.log('onSelect', value);
@@ -17,8 +17,8 @@ const AutoCompleteDemo = ({ navigation }) => {
 
   return (
     <AutoComplete
-      ref={input => deal(input, 'aci')}
-      className={getCls(activeId, 'aci')}
+      ref={input => watch(input, 'aci')}
+      className={show(activeId, 'aci')}
       dataSource={dataSource}
       style={{ width: 200 }}
       onSelect={onSelect}
