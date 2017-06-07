@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Row, Col, Form, Input } from 'antd';
-import * as dcs from '../constant';
 import { getCls, deal } from '../utils/active';
 
 const FormItem = Form.Item;

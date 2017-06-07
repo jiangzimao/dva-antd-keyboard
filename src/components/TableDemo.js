@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'dva';
 import { getCls, deal } from '../utils/active';
 import { Table, Icon } from 'antd';
-import * as dcs from '../constant';
 
 const { Column, ColumnGroup } = Table;
 
@@ -62,6 +61,7 @@ const TableDemo = ({ navigation }) => {
       rowRef={(record, index) => deal(record, `tr${index}`)}
       rowClassName={(record, index) => getTableRowClass(activeId, record, index)}
       rowSelection={rowSelection}
+      bordered
       columns={columns}
       dataSource={data}
     />
