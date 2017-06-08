@@ -1,14 +1,16 @@
 /* eslint-disable no-undef */
 import key from 'keymaster';
-import { resolveKey, context } from '../utils/NavigationMonitor';
+import { resolveKey, updateBlock, context } from '../utils/NavigationMonitor';
 
 key.filter = (event) => {
-  // const tagName = (event.target || event.srcElement).tagName;
-  // key.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
-  const { blockId } = getCurrentActive();
-  key.setScope(blockId);
-  console.log(event.target);
-  console.log(blockId);
+  const tagName = (event.target || event.srcElement).tagName;
+  if (tagName !== 'BODY') {
+    const block = getCurrentActive();
+    if (block) {
+      const { blockId } = block;
+      key.setScope(blockId);
+    }
+  }
   return true;
 };
 
@@ -76,55 +78,57 @@ const setFocus = () => {
   }
 };
 
-// 处理 document 单击事件
+/**
+ * 处理 document 单击事件
+ *
+ * <p>
+ *  document 单击事件处理流程：
+ *    1、 查找事件源或父节点可被选中的节点高亮
+ *    2、 查找事件源或子节点可获得焦点的节点触发 click
+ * </p>
+ * @param dispatch
+ * @param event
+ */
 const documentClickListener = (dispatch, event) => {
   // 获取当前触发事件的元素
-  let element = event.target;
+  let element = event.target || event.srcElement;
   if (element) {
-    // 触发事件元素的样式
-    let classList = element.classList;
-    // 判断当前元素是否是可被选中，如果没有，则向上一级查找，直到 BODY 为止
-    while (!classList.contains('dcs-selectable') && !classList.contains('dcs-active')) {
+    // 查找事件源或父节点可被选中的节点高亮
+    let classList = element.classList; // 触发事件元素的样式
+    while (!classList.contains('dcs-selectable')) {
       element = element.parentElement;
       if (element.tagName === 'BODY') {
-        // 如果找到 body 也未找到，则从 document 获取已经标记选中的元素
-        element = event.target.parentElement.querySelector(FOCUS_ABLE);
-        // 如果为当前已标记的选择中的元素不能获得焦点，则获取可获得焦点的子元素触发单击事件
-        if (element) {
-          if (event.type === 'click' && event.target !== element) {
-            element.click();
-          }
-        }
         return;
       }
       classList = element.classList;
     }
-    // 如果父元素存在可选元素，则对可选元素进行获得焦点处理
     classList = new Set([...classList].filter(className => className.indexOf('dcs-item-') >= 0));
-    classList.forEach((value) => {
-      // 当前可选元素的 key
-      const currentKey = value.replace('dcs-item-', '');
-      // 根据 key 解析出 该元素所对应的可选区ID 和 可选元素ID
-      const { blockId: activeBlockId, itemId: activeId } = resolveKey(currentKey);
-      // 对可选元素进行 dcs-active 样式渲染
+    if (classList !== null && classList.size > 0) {
+      classList = [...classList];
+      const currentItemKey = classList[0].replace('dcs-item-', '');
+      const { blockId: activeBlockId, itemId: activeId } = resolveKey(currentItemKey);
       dispatch({ type: 'special', payload: { activeBlockId, activeId } });
-      // 对可选运行进行 focus 处理
-      setFocus();
+      // 查找事件源或子节点可获得焦点的节点触发 click
+      element = event.target || event.srcElement;
       if (!FOCUS_ABLE.split(',').includes(event.target.tagName)) {
-        element = window.document.querySelector('.dcs-active, .dcs-table-active');
-        if (element.querySelector(FOCUS_ABLE) !== null) {
-          element = element.querySelector(FOCUS_ABLE); // 有可能有多个元素，则获取第一个元素
-          if (event.type === 'click') {
-            element.click();
+        element = element.parentElement.querySelector(FOCUS_ABLE);
+        if (element) {
+          if (event.type === 'click' && element.type !== 'text' && event.target !== element) {
+            if (element.type === 'checkbox') {
+              element.focus();
+            }
+          } else {
+            element.focus();
           }
         }
-      } else if (event.target !== element) {
-        event.target.click();
+      } else {
+        element.focus();
       }
-    });
+    }
+    // event.stopPropagation();
+    // event.preventDefault();
   }
 };
-
 /**
  * 键盘导航 model
  */
@@ -143,10 +147,6 @@ export default {
     setup({ dispatch }) {
       // document click 事件处理
       window.document.addEventListener('click', event => documentClickListener(dispatch, event));
-      // document key down 事件处理
-      // window.document.addEventListener('keydown', (event) => {
-      //   key
-      // });
     },
     keyboardWatcher({ dispatch }) {
       key('enter', () => dispatch({ type: 'enter' }));
@@ -188,6 +188,7 @@ export default {
       key('f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12', (event) => {
         const activeBlockId = event.code;
         if (context.blocks.has(activeBlockId)) {
+          context.currentBlockId = activeBlockId;
           const blockItem = context.blocks.get(activeBlockId);
           dispatch({ type: 'special', payload: { activeBlockId, activeId: [...blockItem][0] } });
         }
@@ -209,12 +210,11 @@ export default {
     // 指定元素
     special(state, action) {
       const { activeBlockId, activeId } = action.payload;
+      updateBlock(activeBlockId, activeId);
       if (activeBlockId && activeId) {
         const newState = { ...state, activeBlockId, activeId };
         return newState;
       }
-      event.stopPropagation();
-      event.preventDefault();
       return { ...state, activeId };
     },
 
@@ -254,12 +254,14 @@ export default {
       if (fallbackArr.length > 0) {
         const { fallback, ...newFallbackQueue } = fallbackArr;
         return { ...state, fallbackQueue: newFallbackQueue, fallback };
+      } else {
+        updateBlock(context.defaultBlockId, context.defaultActiveId);
+        return {
+          ...state,
+          activeBlockId: context.defaultBlockId,
+          activeId: context.defaultActiveId,
+        };
       }
-      return {
-        ...state,
-        activeBlockId: context.defaultBlockId,
-        activeId: context.defaultActiveId,
-      };
     },
 
     // 上一步/下一步

@@ -1,15 +1,17 @@
 import React from 'react';
 import FormBlock from './FormBlock';
-import TableDemo from './TableDemo';
 import ShortcutBlock from './ShortcutBlock';
-import ArtoCompleteDemo from './AutoCompleteDemo';
+import ShortcutBlock2 from './ShortcutBlock2';
+import TableDemo from './TableDemo';
+// import ArtoCompleteDemo from './AutoCompleteDemo';
 
 const Main = () => {
   return (
     <div>
       <ShortcutBlock />
+      <ShortcutBlock2 />
       <FormBlock />
-      <ArtoCompleteDemo />
+      {/* <ArtoCompleteDemo /> */}
       <TableDemo />
     </div>
   );

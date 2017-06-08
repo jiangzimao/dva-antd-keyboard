@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Button } from 'antd';
 import { show, watch, register } from '../utils/NavigationMonitor';
 
-const blockId = 'F5';
+const blockId = 'F6';
 
 const shortcutKey = new Map();
 
@@ -17,15 +17,15 @@ shortcutKey.set('ctrl+left', (dispatch, event) => {
   // 调用 action
 });
 
-const ShortcutBlock = ({ dispatch, navigation }) => {
+const ShortcutBlock2 = ({ dispatch, navigation }) => {
   const { activeId } = navigation;
   return (
     <div ref={div => register(div, blockId, shortcutKey, dispatch)}>
-      操作选项（F5）：
-      <Button ref={input => watch(input, `${blockId}#b1`)} className={show(activeId, `${blockId}#b1`)}>BT1</Button>
-      <Button ref={input => watch(input, `${blockId}#b2`)} className={show(activeId, `${blockId}#b2`)}>BT2</Button>
-      <Button ref={input => watch(input, `${blockId}#b3`)} className={show(activeId, `${blockId}#b3`)}>BT3</Button>
-      <Button ref={input => watch(input, `${blockId}#b4`)} className={show(activeId, `${blockId}#b4`)}>BT4</Button>
+      操作选项（F6）：
+      <Button ref={input => watch(input, `${blockId}#b1`)} className={show(activeId, `${blockId}#b1`)}>按钮1</Button>
+      <Button ref={input => watch(input, `${blockId}#b2`)} className={show(activeId, `${blockId}#b2`)}>按钮2</Button>
+      <Button ref={input => watch(input, `${blockId}#b3`)} className={show(activeId, `${blockId}#b3`)}>按钮3</Button>
+      <Button ref={input => watch(input, `${blockId}#b4`)} className={show(activeId, `${blockId}#b4`)}>按钮4</Button>
     </div>
   );
 };
@@ -36,4 +36,4 @@ function mapStateToProps(state) {
   return { ...state };
 }
 
-export default connect(mapStateToProps)(ShortcutBlock);
+export default connect(mapStateToProps)(ShortcutBlock2);

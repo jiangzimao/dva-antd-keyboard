@@ -1,27 +1,54 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Button, Input, Radio, Row, Col } from 'antd';
-import { show, watch } from '../utils/NavigationMonitor';
+import { show, watch, register } from '../utils/NavigationMonitor';
 
 const RadioGroup = Radio.Group;
 
-const FormBlock = ({ navigation }) => {
+const blockId = 'F7';
+
+const shortcutKey = new Map();
+
+shortcutKey.set('alt+1', (dispatch, event) => {
+  console.log(event.keyCode);
+  // 调用 action
+});
+
+shortcutKey.set('alt+2', (dispatch, event) => {
+  console.log(event.keyCode);
+  // 调用 action
+});
+
+const FormBlock = ({ dispatch, navigation }) => {
   const { activeId } = navigation;
   return (
-    <Row type="flex" justify="space-around" align="middle">
-      <Col span={22}>
-        <Input ref={input => watch(input, 'a')} className={show(activeId, 'a')} />
-        <Input ref={input => watch(input, 'az')} className={show(activeId, 'az')} />
-        <Input ref={input => watch(input, 'ac')} className={show(activeId, 'ac')} />
-        <Button type="primary" ref={input => watch(input, 'submit')} className={show(activeId, 'submit')}>提交</Button>
-        <Button ref={input => watch(input, 'button')} className={show(activeId, 'button')}>取消</Button>
-        <br />
-        <RadioGroup>
-          <Radio value={1} ref={input => watch(input, 'ae')} className={show(activeId, 'ae')}>选项一</Radio>
-          <Radio value={2} ref={input => watch(input, 'ae1')} className={show(activeId, 'ae1')}>选项二</Radio>
-        </RadioGroup>
-      </Col>
-    </Row>
+    <div ref={(div) => { register(div, blockId, shortcutKey, dispatch); }}>
+      表单(F7)
+      <Row type="flex" justify="space-around" align="middle">
+        <Col span={22}>
+          <RadioGroup>
+            <Radio value={1}>选项一（1）</Radio>
+            <Radio value={2}>选项二（2）</Radio>
+          </RadioGroup>
+        </Col>
+      </Row>
+      <Row type="flex" justify="space-around" align="middle">
+        <Col span={22}>
+          <Input ref={input => watch(input, `${blockId}#input1`)} className={show(activeId, `${blockId}#input1`)} />
+          <Input ref={input => watch(input, `${blockId}#input2`)} className={show(activeId, `${blockId}#input2`)} />
+          <Input ref={input => watch(input, `${blockId}#input3`)} className={show(activeId, `${blockId}#input3`)} />
+          <Button
+            type="primary" ref={input => watch(input, `${blockId}#submit`)}
+            className={show(activeId, `${blockId}#submit`)}
+          >提交</Button>
+          <Button
+            ref={input => watch(input, `${blockId}#button`)}
+            className={show(activeId, `${blockId}#button`)}
+          >取消</Button>
+          <br />
+        </Col>
+      </Row>
+    </div>
   );
 };
 
