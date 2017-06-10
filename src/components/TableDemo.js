@@ -54,6 +54,11 @@ const getTableRowClass = (activeId, record, index) => {
   return cls;
 };
 
+const rowClick = (record, index) => {
+  console.log(record);
+  console.log(index);
+};
+
 const TableDemo = ({ navigation }) => {
   const { activeId } = navigation;
   return (
@@ -62,6 +67,7 @@ const TableDemo = ({ navigation }) => {
       rowClassName={(record, index) => getTableRowClass(activeId, record, index)}
       rowSelection={rowSelection}
       bordered
+      onRowClick={(record, index) => rowClick(record, index)}
       columns={columns}
       dataSource={data}
     />

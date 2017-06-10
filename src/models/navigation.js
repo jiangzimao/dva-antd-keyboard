@@ -3,7 +3,9 @@ import key from 'keymaster';
 import { resolveKey, updateBlock, context } from '../utils/NavigationMonitor';
 
 key.filter = (event) => {
-  const tagName = (event.target || event.srcElement).tagName;
+  const tagName = (
+  event.target || event.srcElement
+  ).tagName;
   if (tagName !== 'BODY') {
     const block = getCurrentActive();
     if (block) {
@@ -40,23 +42,6 @@ const getCurrentActive = () => {
       currentActive = resolveKey(currentKey);
     });
     return currentActive;
-  }
-};
-
-//  判断是否当前获得焦点的元素为正在打开的选择框
-const isSelectElementOpen = () => {
-  const dcsActive = document.querySelector('.dcs-active');
-  if (dcsActive) {
-    return dcsActive.className.split(' ').includes('ant-select-open');
-  }
-  return false;
-};
-
-// TODO 关闭选择框
-const closeSelect = () => {
-  const dcsActive = document.querySelector('.dcs-active');
-  if (dcsActive) {
-    dcsActive.className = dcsActive.className.replace('ant-select-open', '');
   }
 };
 
@@ -104,10 +89,12 @@ const documentClickListener = (dispatch, event) => {
     }
     classList = new Set([...classList].filter(className => className.indexOf('dcs-item-') >= 0));
     if (classList !== null && classList.size > 0) {
-      classList = [...classList];
-      const currentItemKey = classList[0].replace('dcs-item-', '');
-      const { blockId: activeBlockId, itemId: activeId } = resolveKey(currentItemKey);
-      dispatch({ type: 'special', payload: { activeBlockId, activeId } });
+      if (![...element.classList].includes('dcs-active')) {
+        classList = [...classList];
+        const currentItemKey = classList[0].replace('dcs-item-', '');
+        const { blockId: activeBlockId, itemId: activeId } = resolveKey(currentItemKey);
+        dispatch({ type: 'special', payload: { activeBlockId, activeId } });
+      }
       // 查找事件源或子节点可获得焦点的节点触发 click
       element = event.target || event.srcElement;
       if (!FOCUS_ABLE.split(',').includes(event.target.tagName)) {
@@ -115,18 +102,32 @@ const documentClickListener = (dispatch, event) => {
         if (element) {
           if (event.type === 'click' && element.type !== 'text' && event.target !== element) {
             if (element.type === 'checkbox') {
-              element.focus();
+              if (!Array.from(element.parentElement.classList).includes('ant-checkbox-checked')) {
+                element.parentElement.className += ' ant-checkbox-checked';
+              } else {
+                element.parentElement.className = element.parentElement.className.replace('ant-checkbox-checked', '');
+              }
+            } else if (element.type === 'text') {
+              return;
             }
-          } else {
-            element.focus();
           }
+          element.focus();
         }
       } else {
+        if (element.type === 'checkbox') {
+          if (!Array.from(element.parentElement.classList).includes('ant-checkbox-checked')) {
+            element.parentElement.className += ' ant-checkbox-checked';
+          } else {
+            element.parentElement.className = element.parentElement.className.replace('ant-checkbox-checked', '');
+          }
+        } else if (element.type === 'text') {
+          return;
+        }
         element.focus();
       }
+      event.stopPropagation();
+      event.preventDefault();
     }
-    // event.stopPropagation();
-    // event.preventDefault();
   }
 };
 /**
@@ -151,10 +152,6 @@ export default {
     keyboardWatcher({ dispatch }) {
       key('enter', () => dispatch({ type: 'enter' }));
       key('esc', () => {
-        if (isSelectElementOpen()) {
-          closeSelect();
-          return;
-        }
         dispatch({ type: 'esc' });
         setFocus();
       });
@@ -162,7 +159,9 @@ export default {
         const element = event.target;
         const keyCode = event.keyCode;
         if (isInputElement(element) && [37, 38].includes(keyCode)) {
-          if (!isEmpty(element.value) || (keyCode === 38 && isSelectElementOpen())) {
+          if (!isEmpty(element.value) || (
+            keyCode === 38
+            )) {
             return true;
           }
         }
@@ -174,17 +173,17 @@ export default {
         const element = event.target;
         const keyCode = event.keyCode;
         if (isInputElement(element) && [39, 40].includes(keyCode)) {
-          if (!isEmpty(element.value) || (keyCode === 40 && isSelectElementOpen())) {
+          if (!isEmpty(element.value) || (
+            keyCode === 40
+            )) {
             return true;
           }
         }
         dispatch({ type: 'step', payload: { step: 1 } });
         setFocus();
-        event.stopPropagation();
-        event.preventDefault();
         return false;
       });
-      key('space', () => { dispatch({ type: 'selectItem' }); });
+      key('space', () => { documentClickListener(dispatch, event); }); // dispatch({ type: 'selectItem' });
       key('f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12', (event) => {
         const activeBlockId = event.code;
         if (context.blocks.has(activeBlockId)) {
@@ -212,8 +211,7 @@ export default {
       const { activeBlockId, activeId } = action.payload;
       updateBlock(activeBlockId, activeId);
       if (activeBlockId && activeId) {
-        const newState = { ...state, activeBlockId, activeId };
-        return newState;
+        return { ...state, activeBlockId, activeId };
       }
       return { ...state, activeId };
     },
@@ -222,8 +220,8 @@ export default {
     selectItem(state) {
       const element = window.document.querySelector('.dcs-active, .dcs-table-active');
       if (element.tagName !== 'INPUT') {
-        const input = element.querySelector('INPUT');
-        input.click();
+        // const input = element.querySelector('INPUT');
+        // input.click();
         event.stopPropagation();
         event.preventDefault();
       }
