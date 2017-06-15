@@ -3,6 +3,7 @@
  */
 const fallbackQueue = new Set();
 fallbackQueue.add('aaa');
+fallbackQueue.add('aaa');
 fallbackQueue.add('bbb');
 fallbackQueue.add('ccc');
 const otherInfo = 'this is other info';
