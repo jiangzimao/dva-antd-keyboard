@@ -35,7 +35,7 @@ export default {
   state: {
     activeId: context.defaultActiveId,       // 当前被激活的元素ID，默认为命令输入框获得焦点
     activeBlockId: context.defaultBlockId,  // 当前切换区域ID
-    shortcutKey: new Set(), // 快捷键
+    shortcutKey: new Map(), // 快捷键
   },
 
   subscriptions: {
@@ -82,13 +82,19 @@ export default {
 
     keyHandler(state, { payload }) {
       const { keyCode, altKey, ctrlKey, shiftKey } = payload;
-      const { shortcutKey } = state;
-      const matchedShortcutKey = new Set([...shortcutKey].filter((key) => {
+      const { shortcutKey, scope } = state;
+      const scopeShortcutKey = shortcutKey.get(scope);
+      const matchedKey = new Set([...scopeShortcutKey].filter((key) => {
         // 判断级别 组合键 > 单键
+        if (altKey === matchedKey.altKey && ctrlKey === matchedKey.ctrlKey && shiftKey === matchedKey.shiftKey) {
+          return key;
+        } else if () {
+
+        }
         return key.keyCode === keyCode;
       }));
-      if (matchedShortcutKey && matchedShortcutKey.size > 0) {
-        const { fun } = matchedShortcutKey;
+      if (matchedKey && matchedKey.size > 0) {
+        const { fun } = matchedKey;
         fun.call(null);
       }
     },
