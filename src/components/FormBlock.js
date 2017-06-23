@@ -1,9 +1,11 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Button, Input, Radio, Row, Col } from 'antd';
+import { Button, Input, Row, Col } from 'antd';
+import DcsRadioGroup from './DcsRadioGroup';
+import DcsRadio from './DcsRadio';
+import RadioGroup from './RadioGroup';
+import Radio from './Radio';
 import { show, watch, register } from '../utils/NavigationMonitor';
-
-const RadioGroup = Radio.Group;
 
 const blockId = 'F7';
 
@@ -21,15 +23,17 @@ shortcutKey.set('alt+2', (dispatch, event) => {
 
 const FormBlock = ({ dispatch, navigation }) => {
   const { activeId } = navigation;
+  const options = [
+    { id: 'a', key: [13, 24], label: 'Apple', value: 'Apple' },
+    { id: 'b', key: [13, 25], label: 'Pear', value: 'Pear' },
+    { id: 'c', key: [13, 26], label: 'Orange', value: 'Orange' },
+  ];
   return (
     <div ref={(div) => { register(div, blockId, shortcutKey, dispatch); }}>
       表单(F7)
       <Row type="flex" justify="space-around" align="middle">
         <Col span={22}>
-          <RadioGroup>
-            <Radio value={1}>选项一（1）</Radio>
-            <Radio value={2}>选项二（2）</Radio>
-          </RadioGroup>
+          <DcsRadioGroup options={options} />
         </Col>
       </Row>
       <Row type="flex" justify="space-around" align="middle">
