@@ -1,0 +1,26 @@
+@startuml
+
+start
+partition AOP拦截器 {
+    :获取请求版本信息;
+    partition 业务处理 {
+        :业务逻辑运算;
+        :保存业务数据;
+    }
+    partition 版本控制 {
+        if (不存在版本信息) then (是)
+            :新建版本信息;
+        else if(比较bizCode) then (不相等)
+            :更新bizCode;
+        endif
+        if (版本号状态) then(未初始化)
+            :初始化版本号;
+        endif
+        :获取下一个版本号;
+        :更新版本缓存信息;
+    }
+    :获取版本差异信息;
+    :返回差异数据;
+}
+stop
+@enduml
